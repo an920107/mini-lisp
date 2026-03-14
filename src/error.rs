@@ -5,6 +5,7 @@ pub enum Error {
     IOError(io::Error),
     LexicalError((usize, ops::Range<usize>), String),
     SyntaxError(String),
+    SemanticError(String),
 }
 
 impl fmt::Display for Error {
@@ -19,6 +20,7 @@ impl fmt::Display for Error {
                 e
             ),
             Error::SyntaxError(e) => write!(f, "syntax error: {}", e),
+            Error::SemanticError(e) => write!(f, "semantic error: {}", e),
         }
     }
 }

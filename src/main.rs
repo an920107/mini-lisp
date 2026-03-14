@@ -1,4 +1,5 @@
 use mini_lisp::{
+    evaluator::Evaluator,
     parser::Parser,
     scanner::{Scanner, token::Token},
 };
@@ -35,5 +36,14 @@ fn main() {
 
     if cfg!(debug_assertions) {
         println!("AST: {:#?}", program);
+    }
+
+    let mut evaluator = Evaluator::new(program);
+    match evaluator.evaluate() {
+        Ok(_) => (),
+        Err(e) => {
+            eprintln!("{}", e.to_string());
+            std::process::exit(1);
+        }
     }
 }
