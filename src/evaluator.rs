@@ -2,6 +2,8 @@ mod error;
 mod symbol_table;
 mod value;
 
+use std::io;
+
 use crate::{
     error::Error,
     evaluator::{
@@ -30,7 +32,7 @@ impl Evaluator {
         }
     }
 
-    pub fn evaluate(&mut self) -> Result<(), Error> {
+    pub fn evaluate<W: io::Write>(&mut self, writer: &mut W) -> Result<(), Error> {
         for statement in &self.program.0 {
             let result = match statement {
                 Statement::Define(DefineStatement {
@@ -53,11 +55,12 @@ impl Evaluator {
                     };
                     match (print_statement, value) {
                         (PrintStatement::Boolean(_), Ok(Value::Boolean(b))) => {
-                            println!("{}", if b { "#t" } else { "#f" });
+                            writeln!(writer, "{}", if b { "#t" } else { "#f" })
+                                .map_err(|e| Error::IOError(e))?;
                             Ok(())
                         }
                         (PrintStatement::Integer(_), Ok(Value::Integer(n))) => {
-                            println!("{}", n);
+                            writeln!(writer, "{}", n).map_err(|e| Error::IOError(e))?;
                             Ok(())
                         }
                         (PrintStatement::Boolean(_), Ok(v)) => Err(EvaluatingError::TypeError(

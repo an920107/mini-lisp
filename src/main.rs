@@ -1,3 +1,5 @@
+use std::io::{self, BufReader};
+
 use mini_lisp::{
     evaluator::Evaluator,
     parser::Parser,
@@ -5,11 +7,14 @@ use mini_lisp::{
 };
 
 fn main() {
+    let mut stdin = BufReader::new(io::stdin());
+    let mut stdout = io::stdout();
+
     let mut tokens: Vec<Token> = vec![];
     let mut scanner = Scanner::new();
 
     loop {
-        match scanner.scan_line() {
+        match scanner.scan_line(&mut stdin) {
             Ok(line_tokens) => match line_tokens {
                 Some(line_tokens) => tokens.extend(line_tokens),
                 None => break,
@@ -39,7 +44,7 @@ fn main() {
     }
 
     let mut evaluator = Evaluator::new(program);
-    match evaluator.evaluate() {
+    match evaluator.evaluate(&mut stdout) {
         Ok(_) => (),
         Err(e) => {
             eprintln!("{}", e.to_string());
