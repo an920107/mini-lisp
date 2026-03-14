@@ -4,6 +4,7 @@ use std::{fmt, io, ops};
 pub enum Error {
     IOError(io::Error),
     LexicalError((usize, ops::Range<usize>), String),
+    SyntaxError(String),
 }
 
 impl fmt::Display for Error {
@@ -17,6 +18,7 @@ impl fmt::Display for Error {
                 range.start + 1,
                 e
             ),
+            Error::SyntaxError(e) => write!(f, "syntax error: {}", e),
         }
     }
 }

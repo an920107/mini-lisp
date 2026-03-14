@@ -1,4 +1,5 @@
 use mini_lisp::{
+    parser::Parser,
     scanner::{Scanner, token::Token},
 };
 
@@ -21,5 +22,18 @@ fn main() {
 
     if cfg!(debug_assertions) {
         println!("Tokens: {:#?}", tokens);
+    }
+
+    let mut parser = Parser::new(tokens);
+    let program = match parser.parse() {
+        Ok(program) => program,
+        Err(e) => {
+            eprintln!("{}", e.to_string());
+            std::process::exit(1);
+        }
+    };
+
+    if cfg!(debug_assertions) {
+        println!("AST: {:#?}", program);
     }
 }
